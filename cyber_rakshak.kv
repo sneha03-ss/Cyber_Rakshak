@@ -1,0 +1,862 @@
+#:import dp kivy.metrics.dp
+
+# Custom widget definition for chat messages
+<ChatMessage@MDBoxLayout>:
+    adaptive_height: True
+    padding: dp(15)
+    spacing: dp(10)
+    is_user: True # Custom property to differentiate sender
+
+    canvas.before:
+        Color:
+            # Blue for user (right-aligned), Grey for bot (left-aligned)
+            rgba: (0.2, 0.4, 0.9, 1) if root.is_user else (0.3, 0.3, 0.3, 1)
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            # Different corners are rounded based on the sender
+            radius: [15, 15, 0, 15] if root.is_user else [15, 15, 15, 0]
+
+    MDLabel:
+        text: "" # The message text will be set from python
+        size_hint_y: None
+        height: self.texture_size[1]
+        markup: True
+        theme_text_color: "Custom"
+        text_color: 1, 1, 1, 1
+
+ScreenManager:
+    SplashScreen:
+    MainScreen:
+    AIChatbotScreen:
+    DetectorsScreen:
+    DeepfakeDetectionScreen:
+    ReportScreen:
+    TrustCircleScreen:
+    BlockedListScreen:
+    ScamRadarScreen:
+    AboutUsScreen:
+
+<SplashScreen>:
+    name: "splash"
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: "splash.jpg"
+
+<MainScreen>:
+    name: "main"
+    MDBoxLayout:
+        orientation: "vertical"
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        # Custom Top Bar
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: dp(56)
+            padding: dp(10), 0
+            spacing: dp(10)
+            canvas.before:
+                Color:
+                    rgba: 0.54, 0.17, 0.89, 1
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+
+            Image:
+                source: "logo.png"
+                size_hint: None, None
+                size: dp(40), dp(40)
+                allow_stretch: True
+                keep_ratio: True
+                pos_hint: {"center_y": 0.5}
+
+            MDLabel:
+                text: "Cyber Rakshak"
+                color: 1, 1, 1, 1
+                font_style: "H6"
+                halign: "left"
+                valign: "middle"
+                size_hint_x: 1
+
+            MDIconButton:
+                icon: "menu"
+                theme_text_color: "Custom"
+                text_color: 1, 1, 1, 1
+                pos_hint: {"center_y": 0.5}
+                on_release: app.open_nav()
+
+        MDNavigationLayout:
+            ScreenManager:
+                id: nav_screen_manager
+                Screen:
+                    name: "dashboard"
+                    ScrollView:
+                        do_scroll_x: False
+                        GridLayout:
+                            cols: 2
+                            spacing: dp(40)
+                            padding: dp(30)
+                            size_hint_y: None
+                            height: self.minimum_height
+
+                            ClickableIcon:
+                                icon_name: "robot"
+                                label_text: "AI Chatbot"
+                                icon_id: "aichatbot"
+                                icon_color: 0.3, 1, 1, 1
+                            ClickableIcon:
+                                icon_name: "bug"
+                                label_text: "Detectors"
+                                icon_id: "detectors"
+                                icon_color: 1, 0.53, 0.77, 1
+                            ClickableIcon:
+                                icon_name: "account-search"
+                                label_text: "Deepfake Detection"
+                                icon_id: "deepfake"
+                                icon_color: 0.47, 0.7, 1, 1
+                            ClickableIcon:
+                                icon_name: "heart-outline"
+                                label_text: "Trust Circle"
+                                icon_id: "trustcircle"
+                                icon_color: 0.44, 1, 1, 1
+                            ClickableIcon:
+                                icon_name: "block-helper"
+                                label_text: "Blocked List"
+                                icon_id: "blockedlist"
+                                icon_color: 0.47, 0.7, 1, 1
+                            ClickableIcon:
+                                icon_name: "shield-lock"
+                                label_text: "Scam Radar"
+                                icon_id: "scamradar"
+                                icon_color: 1, 0.53, 0.77, 1
+                            ClickableIcon:
+                                icon_name: "alert"
+                                label_text: "Report"
+                                icon_id: "report"
+                                icon_color: 0.47, 0.7, 1, 1
+                            ClickableIcon:
+                                icon_name: "information"
+                                label_text: "About Us"
+                                icon_id: "aboutus"
+                                icon_color: 0.3, 1, 1, 1
+            MDNavigationDrawer:
+                id: nav_drawer
+                md_bg_color: 0.54, 0.17, 0.89, 1
+                BoxLayout:
+                    orientation: "vertical"
+                    padding: dp(20)
+                    spacing: dp(15)
+                    MDRaisedButton:
+                        text: "About Us"
+                        on_release: nav_drawer.set_state("close"); app.on_icon_press("aboutus")
+                    MDRaisedButton:
+                        text: "Contact Us"
+                        on_release: nav_drawer.set_state("close")
+                    MDRaisedButton:
+                        text: "Profile"
+                        on_release: nav_drawer.set_state("close")
+                    MDRaisedButton:
+                        text: "Log Out"
+                        on_release: nav_drawer.set_state("close")
+
+<ClickableIcon@ButtonBehavior+BoxLayout>:
+    icon_name: ""
+    label_text: ""
+    icon_id: ""
+    icon_color: 1, 1, 1, 1
+    orientation: "vertical"
+    size_hint_y: None
+    height: dp(100)
+    padding: dp(10)
+    spacing: dp(10)
+    on_release: app.on_icon_press(root.icon_id)
+    MDIcon:
+        icon: root.icon_name
+        font_size: dp(48)
+        theme_text_color: "Custom"
+        text_color: root.icon_color
+        pos_hint: {"center_x": 0.5}
+    MDLabel:
+        text: root.label_text
+        halign: 'center'
+        font_style: "Subtitle1"
+        theme_text_color: "Custom"
+        text_color: root.icon_color
+        size_hint_y: None
+        height: self.texture_size[1]
+
+<AIChatbotScreen>:
+    name: "aichatbot"
+    MDBoxLayout:
+        orientation: 'vertical'
+        md_bg_color: 0.1, 0.1, 0.1, 1
+
+        MDTopAppBar:
+            title: "Cyber Rakshak AI"
+            left_action_items: [["arrow-left", lambda x: app.go_back()]]
+            md_bg_color: 0.54, 0.17, 0.89, 1
+            specific_text_color: 1, 1, 1, 1
+
+        ScrollView:
+            id: scroll_view
+            do_scroll_x: False
+            do_scroll_y: True
+            MDBoxLayout:
+                id: chat_history
+                orientation: 'vertical'
+                adaptive_height: True
+                padding: dp(10)
+                spacing: dp(10)
+
+        MDBoxLayout:
+            size_hint_y: None
+            height: self.minimum_height
+            padding: dp(10)
+            spacing: dp(10)
+
+            MDTextField:
+                id: user_input
+                hint_text: "Ask a question..."
+                mode: "round"
+                size_hint_x: 0.85
+                on_text_validate: root.send_message() # Send on Enter key
+
+            MDIconButton:
+                icon: "send"
+                on_release: root.send_message()
+                theme_text_color: "Custom"
+                text_color: 1, 1, 1, 1
+
+<DetectorsScreen>:
+    name: "detectors"
+    MDBoxLayout:
+        orientation: 'vertical'
+        MDTopAppBar:
+            title: "Phishing & Scam Detectors"
+            left_action_items: [["arrow-left", lambda x: app.go_back()]]
+        MDTabs:
+            id: phishing_tabs
+            Tab:
+                title: "Mail"
+                BoxLayout:
+                    orientation: "vertical"
+                    padding: dp(10)
+                    spacing: dp(10)
+                    MDTextField:
+                        id: mail_sub
+                        hint_text: "Enter email subject"
+                    MDTextField:
+                        id: mail_body
+                        hint_text: "Paste email body here"
+                        multiline: True
+                        size_hint_y: None
+                        height: dp(100)
+                    MDRaisedButton:
+                        text: "Analyze Email"
+                        on_release: root.detect_mail(mail_sub.text, mail_body.text)
+                        pos_hint: {"center_x": 0.5}
+                    ScrollView:
+                        MDLabel:
+                            id: result_mail
+                            text: root.result_email
+                            size_hint_y: None
+                            height: self.texture_size[1]
+                            halign: "left"
+                            theme_text_color: "Custom"
+                            text_color: root.result_email_color
+            Tab:
+                title: "SMS"
+                BoxLayout:
+                    orientation: "vertical"
+                    padding: dp(10)
+                    spacing: dp(10)
+                    MDTextField:
+                        id: sms_text
+                        hint_text: "Paste suspicious SMS message here"
+                        multiline: True
+                        size_hint_y: None
+                        height: dp(100)
+                    MDRaisedButton:
+                        text: "Analyze SMS"
+                        on_release: root.detect_sms(sms_text.text)
+                        pos_hint: {"center_x": 0.5}
+                    ScrollView:
+                        MDLabel:
+                            id: result_sms
+                            text: root.result_sms
+                            size_hint_y: None
+                            height: self.texture_size[1]
+                            halign: "left"
+                            theme_text_color: "Custom"
+                            text_color: root.result_sms_color
+            Tab:
+                title: "Vishing (Voice Scam)"
+                BoxLayout:
+                    orientation: "vertical"
+                    padding: dp(10)
+                    spacing: dp(10)
+                    MDTextField:
+                        id: vish_transcript
+                        hint_text: "Describe the call or enter a transcript"
+                        multiline: True
+                        size_hint_y: None
+                        height: dp(100)
+                    MDTextField:
+                        id: vish_phone
+                        hint_text: "Enter caller's phone number (e.g., +1...)"
+                        multiline: False
+                    MDRaisedButton:
+                        text: "Analyze Call"
+                        on_release: root.detect_vishing(vish_transcript.text, vish_phone.text)
+                        pos_hint: {"center_x": 0.5}
+                    ScrollView:
+                        MDLabel:
+                            id: result_vish
+                            text: root.result_vishing
+                            size_hint_y: None
+                            height: self.texture_size[1]
+                            halign: "left"
+                            theme_text_color: "Custom"
+                            text_color: root.result_vishing_color
+
+<DeepfakeDetectionScreen>:
+    name: "deepfake"
+    MDBoxLayout:
+        orientation: "vertical"
+        canvas.before:
+            Color:
+                rgba: 0.05, 0.05, 0.05, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+        MDTopAppBar:
+            title: "Deepfake Detection"
+            left_action_items: [["arrow-left", lambda x: app.go_back()]]
+            md_bg_color: 0.54, 0.17, 0.89, 1
+            specific_text_color: 1, 1, 1, 1
+            elevation: 8
+
+        ScrollView:
+            do_scroll_x: False
+            MDBoxLayout:
+                orientation: "vertical"
+                adaptive_height: True
+                padding: dp(24)
+                spacing: dp(24)
+
+                MDCard:
+                    size_hint_y: None
+                    height: dp(120)
+                    elevation: 12
+                    md_bg_color: 0.12, 0.12, 0.12, 1
+                    padding: dp(20)
+                    
+                    canvas.before:
+                        Color:
+                            rgba: 0.54, 0.17, 0.89, 0.1
+                        RoundedRectangle:
+                            size: self.size
+                            pos: self.pos
+                            radius: [dp(16), dp(16), dp(16), dp(16)]
+                    
+                    MDBoxLayout:
+                        orientation: "horizontal"
+                        spacing: dp(16)
+                        
+                        MDIcon:
+                            icon: "shield-search"
+                            font_size: dp(48)
+                            theme_text_color: "Custom"
+                            text_color: 0.54, 0.17, 0.89, 1
+                            pos_hint: {"center_y": 0.5}
+                        
+                        MDBoxLayout:
+                            orientation: "vertical"
+                            spacing: dp(8)
+                            
+                            MDLabel:
+                                text: "AI-Powered Deepfake Detection"
+                                font_style: "H5"
+                                theme_text_color: "Custom"
+                                text_color: 1, 1, 1, 1
+                                halign: "left"
+                                size_hint_y: None
+                                height: self.texture_size[1]
+                            
+                            MDLabel:
+                                text: "Upload any image to detect if it's AI-generated using advanced machine learning"
+                                font_style: "Body2"
+                                theme_text_color: "Custom"
+                                text_color: 0.8, 0.8, 0.8, 1
+                                halign: "left"
+                                size_hint_y: None
+                                height: self.texture_size[1]
+
+                MDCard:
+                    size_hint_y: None
+                    height: dp(280)
+                    elevation: 8
+                    md_bg_color: 0.15, 0.15, 0.15, 1
+                    padding: dp(20)
+                    
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        spacing: dp(16)
+                        
+                        MDBoxLayout:
+                            size_hint_y: None
+                            height: dp(180)
+                            pos_hint: {"center_x": 0.5}
+                            
+                            canvas.before:
+                                Color:
+                                    rgba: 0.2, 0.2, 0.2, 1
+                                RoundedRectangle:
+                                    size: self.size
+                                    pos: self.pos
+                                    radius: [dp(8), dp(8), dp(8), dp(8)]
+                                Color:
+                                    rgba: 0.54, 0.17, 0.89, 0.3
+                                Line:
+                                    rounded_rectangle: [self.x, self.y, self.width, self.height, dp(8)]
+                                    width: 2
+                                    dash_length: dp(8)
+                                    dash_offset: dp(4)
+                            
+                            Image:
+                                id: selected_image
+                                source: ""
+                                opacity: 0
+                                allow_stretch: True
+                                keep_ratio: True
+                                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                size_hint: 0.9, 0.9
+                                
+                            MDBoxLayout:
+                                orientation: "vertical"
+                                spacing: dp(12)
+                                opacity: 1 if selected_image.opacity == 0 else 0
+                                
+                                MDIcon:
+                                    icon: "cloud-upload"
+                                    font_size: dp(48)
+                                    theme_text_color: "Custom"
+                                    text_color: 0.6, 0.6, 0.6, 1
+                                    pos_hint: {"center_x": 0.5}
+                                
+                                MDLabel:
+                                    text: "Drop your image here"
+                                    font_style: "H6"
+                                    theme_text_color: "Custom"
+                                    text_color: 0.6, 0.6, 0.6, 1
+                                    halign: "center"
+                                    size_hint_y: None
+                                    height: self.texture_size[1]
+                                
+                                MDLabel:
+                                    text: "JPG, PNG, BMP, GIF supported"
+                                    font_style: "Caption"
+                                    theme_text_color: "Custom"
+                                    text_color: 0.5, 0.5, 0.5, 1
+                                    halign: "center"
+                                    size_hint_y: None
+                                    height: self.texture_size[1]
+
+                        MDBoxLayout:
+                            orientation: "horizontal"
+                            size_hint_y: None
+                            height: dp(48)
+                            spacing: dp(12)
+                            
+                            MDRaisedButton:
+                                text: "Select Image"
+                                icon: "image-plus"
+                                on_release: root.select_image()
+                                theme_text_color: "Custom"
+                                text_color: 1, 1, 1, 1
+                                md_bg_color: 0.54, 0.17, 0.89, 1
+                                size_hint_x: 0.6
+                                elevation: 4
+                            
+                            MDFlatButton:
+                                text: "Clear"
+                                icon: "close-circle"
+                                on_release: root.clear_selection()
+                                theme_text_color: "Custom"
+                                text_color: 0.8, 0.3, 0.3, 1
+                                size_hint_x: 0.4
+
+                MDRaisedButton:
+                    id: detect_button
+                    text: "Analyze Image for Deepfakes"
+                    icon: "magnify-scan"
+                    disabled: True
+                    on_release: root.detect_deepfake()
+                    theme_text_color: "Custom"
+                    text_color: 1, 1, 1, 1
+                    md_bg_color: 0.2, 0.7, 0.2, 1
+                    size_hint_y: None
+                    height: dp(56)
+                    elevation: 6
+                    font_size: dp(16)
+
+                MDCard:
+                    size_hint_y: None
+                    height: dp(240)
+                    elevation: 6
+                    md_bg_color: 0.12, 0.12, 0.12, 1
+                    padding: dp(20)
+                    
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        spacing: dp(12)
+                        
+                        MDLabel:
+                            text: "Analysis Results"
+                            font_style: "H6"
+                            theme_text_color: "Custom"
+                            text_color: 1, 1, 1, 1
+                            halign: "left"
+                            size_hint_y: None
+                            height: self.texture_size[1]
+                        
+                        ScrollView:
+                            MDLabel:
+                                id: result_text
+                                text: "Select an image to analyze for deepfakes."
+                                theme_text_color: "Custom"
+                                text_color: 0.8, 0.8, 0.8, 1
+                                size_hint_y: None
+                                height: self.texture_size[1]
+                                markup: True
+                                halign: "left"
+                                valign: "top"
+                                line_height: 1.4
+
+<ReportScreen>:
+    name: "report"
+    MDFloatLayout:
+        MDTopAppBar:
+            title: "Report an Incident"
+            left_action_items: [["arrow-left", lambda x: app.go_back()]]
+            pos_hint: {"top": 1}
+            elevation: 4
+        MDBoxLayout:
+            orientation: "vertical"
+            spacing: dp(25)
+            adaptive_height: True
+            pos_hint: {"center_x": .5, "center_y": .5}
+            MDRaisedButton:
+                text: "Report a Suspected Scam"
+                font_style: "H6"
+                size_hint_x: None
+                width: "280dp"
+                pos_hint: {"center_x": .5}
+                padding: "15dp"
+                on_release: root.show_report_form()
+            MDRaisedButton:
+                text: "Report to Cybercrime.gov.in"
+                font_style: "H6"
+                size_hint_x: None
+                width: "280dp"
+                pos_hint: {"center_x": .5}
+                padding: "15dp"
+                on_release: root.open_critical_report()
+
+<TrustCircleScreen>:
+    name: "trustcircle"
+    MDBoxLayout:
+        orientation: 'vertical'
+        MDTopAppBar:
+            title: "Trust Circle"
+            left_action_items: [["arrow-left", lambda x: app.go_back()]]
+        MDLabel:
+            halign: "center"
+            text: "Trust Circle Content"
+
+<BlockedListScreen>:
+    name: "blockedlist"
+    MDBoxLayout:
+        orientation: 'vertical'
+        MDTopAppBar:
+            title: "Blocked List"
+            left_action_items: [["arrow-left", lambda x: app.go_back()]]
+        MDLabel:
+            halign: "center"
+            text: "Blocked List Content"
+
+<ScamRadarScreen>:
+    name: "scamradar"
+    MDBoxLayout:
+        orientation: 'vertical'
+        MDTopAppBar:
+            title: "Scam Radar"
+            left_action_items: [["arrow-left", lambda x: app.go_back()]]
+        MDLabel:
+            halign: "center"
+            text: "Scam Radar Content"
+
+<AboutUsScreen>:
+    name: "aboutus"
+    MDBoxLayout:
+        orientation: "vertical"
+        canvas.before:
+            Color:
+                rgba: 0.05, 0.05, 0.05, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+        MDTopAppBar:
+            title: "About Us"
+            left_action_items: [["arrow-left", lambda x: app.go_back()]]
+            md_bg_color: 0.54, 0.17, 0.89, 1
+            specific_text_color: 1, 1, 1, 1
+            elevation: 8
+
+        ScrollView:
+            do_scroll_x: False
+            MDBoxLayout:
+                orientation: "vertical"
+                adaptive_height: True
+                padding: dp(24)
+                spacing: dp(24)
+
+                # Hero Section
+                MDBoxLayout:
+                    orientation: "vertical"
+                    adaptive_height: True
+                    spacing: dp(16)
+                    padding: [dp(20), dp(20), dp(20), dp(20)]
+                    canvas.before:
+                        Color:
+                            rgba: 0.54, 0.17, 0.89, 0.1
+                        RoundedRectangle:
+                            size: self.size
+                            pos: self.pos
+                            radius: [dp(12), dp(12), dp(12), dp(12)]
+
+                    MDLabel:
+                        text: "🛡️ Cyber Rakshak"
+                        theme_text_color: "Custom"
+                        text_color: 0.54, 0.17, 0.89, 1
+                        font_style: "H4"
+                        halign: "center"
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    MDLabel:
+                        text: "Your AI-Powered Digital Shield"
+                        theme_text_color: "Custom"
+                        text_color: 0.8, 0.8, 0.8, 1
+                        font_style: "H6"
+                        halign: "center"
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                # Description Section
+                MDBoxLayout:
+                    orientation: "vertical"
+                    adaptive_height: True
+                    spacing: dp(12)
+
+                    MDLabel:
+                        text: "About Cyber Rakshak"
+                        theme_text_color: "Custom"
+                        text_color: 1, 1, 1, 1
+                        font_style: "H5"
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    MDLabel:
+                        text: "Cyber Rakshak is an AI-powered digital shield, designed to protect you and your loved ones from online scams and fraud. Today, as everything goes digital, facing digital fraud has become an everyday risk. Cyber Rakshak is built to be your one-stop solution; listening, blocking, alerting, and guiding you in real time, before any harm happens."
+                        theme_text_color: "Custom"
+                        text_color: 0.9, 0.9, 0.9, 1
+                        font_style: "Body1"
+                        size_hint_y: None
+                        height: self.texture_size[1]
+                        line_height: 1.4
+
+                # How It Works Section
+                MDBoxLayout:
+                    orientation: "vertical"
+                    adaptive_height: True
+                    spacing: dp(12)
+
+                    MDLabel:
+                        text: "How It Works"
+                        theme_text_color: "Custom"
+                        text_color: 1, 1, 1, 1
+                        font_style: "H5"
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    MDLabel:
+                        text: "The system works in the background, checking for scams, fake content and fraud messages. If a threat is detected, you get an instant alert and recommended actions. When technology can't catch everything, Cyber Rakshak brings in family support, making cybersecurity a team effort."
+                        theme_text_color: "Custom"
+                        text_color: 0.9, 0.9, 0.9, 1
+                        font_style: "Body1"
+                        size_hint_y: None
+                        height: self.texture_size[1]
+                        line_height: 1.4
+
+                # Key Features Section
+                MDBoxLayout:
+                    orientation: "vertical"
+                    adaptive_height: True
+                    spacing: dp(12)
+
+                    MDLabel:
+                        text: "Key Features"
+                        theme_text_color: "Custom"
+                        text_color: 1, 1, 1, 1
+                        font_style: "H5"
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        adaptive_height: True
+                        spacing: dp(8)
+
+                        MDLabel:
+                            text: "✓ Detects scams and deepfakes as they happen"
+                            theme_text_color: "Custom"
+                            text_color: 0.2, 0.8, 0.2, 1
+                            font_style: "Body1"
+                            size_hint_y: None
+                            height: self.texture_size[1]
+
+                        MDLabel:
+                            text: "✓ One-tap reporting for any suspicious activity"
+                            theme_text_color: "Custom"
+                            text_color: 0.2, 0.8, 0.2, 1
+                            font_style: "Body1"
+                            size_hint_y: None
+                            height: self.texture_size[1]
+
+                        MDLabel:
+                            text: "✓ Maintains a personal blocked list to keep threats away"
+                            theme_text_color: "Custom"
+                            text_color: 0.2, 0.8, 0.2, 1
+                            font_style: "Body1"
+                            size_hint_y: None
+                            height: self.texture_size[1]
+
+                        MDLabel:
+                            text: "✓ Provides an AI-powered helpline chatbot for quick advice"
+                            theme_text_color: "Custom"
+                            text_color: 0.2, 0.8, 0.2, 1
+                            font_style: "Body1"
+                            size_hint_y: None
+                            height: self.texture_size[1]
+
+                        MDLabel:
+                            text: "✓ Lets trusted family members help build a safer digital space"
+                            theme_text_color: "Custom"
+                            text_color: 0.2, 0.8, 0.2, 1
+                            font_style: "Body1"
+                            size_hint_y: None
+                            height: self.texture_size[1]
+
+                # Mission Section
+                MDBoxLayout:
+                    orientation: "vertical"
+                    adaptive_height: True
+                    spacing: dp(12)
+                    padding: [dp(20), dp(20), dp(20), dp(20)]
+                    canvas.before:
+                        Color:
+                            rgba: 0.54, 0.17, 0.89, 0.1
+                        RoundedRectangle:
+                            size: self.size
+                            pos: self.pos
+                            radius: [dp(12), dp(12), dp(12), dp(12)]
+
+                    MDLabel:
+                        text: "Our Mission"
+                        theme_text_color: "Custom"
+                        text_color: 0.54, 0.17, 0.89, 1
+                        font_style: "H5"
+                        halign: "center"
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    MDLabel:
+                        text: "Empower everyone with peace of mind online, prevent financial losses before they happen, and build digital trust for all. Cyber Rakshak is more than an app; it's your digital airbag against scams, blending advanced AI with real community support."
+                        theme_text_color: "Custom"
+                        text_color: 0.9, 0.9, 0.9, 1
+                        font_style: "Body1"
+                        halign: "center"
+                        size_hint_y: None
+                        height: self.texture_size[1]
+                        line_height: 1.4
+
+                # Our Journey Section
+                MDBoxLayout:
+                    orientation: "vertical"
+                    adaptive_height: True
+                    spacing: dp(12)
+
+                    MDLabel:
+                        text: "Our Journey"
+                        theme_text_color: "Custom"
+                        text_color: 1, 1, 1, 1
+                        font_style: "H5"
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    MDLabel:
+                        text: "Inspired by real cases like a couple losing ₹50 lakh to digital extortion, we've researched Maharashtra Government laws, National Crime Records Bureau data, and leveraged ML datasets from Kaggle to make this a reality."
+                        theme_text_color: "Custom"
+                        text_color: 0.9, 0.9, 0.9, 1
+                        font_style: "Body1"
+                        size_hint_y: None
+                        height: self.texture_size[1]
+                        line_height: 1.4
+
+                # Call to Action Section
+                MDBoxLayout:
+                    orientation: "vertical"
+                    adaptive_height: True
+                    spacing: dp(12)
+                    padding: [dp(20), dp(20), dp(20), dp(20)]
+                    canvas.before:
+                        Color:
+                            rgba: 0.2, 0.6, 0.2, 0.1
+                        RoundedRectangle:
+                            size: self.size
+                            pos: self.pos
+                            radius: [dp(12), dp(12), dp(12), dp(12)]
+
+                    MDLabel:
+                        text: "Join the Fight Against Digital Fraud"
+                        theme_text_color: "Custom"
+                        text_color: 0.2, 0.8, 0.2, 1
+                        font_style: "H5"
+                        halign: "center"
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    MDLabel:
+                        text: "Join us in making the digital space safer together, we can outsmart the scammers!"
+                        theme_text_color: "Custom"
+                        text_color: 0.9, 0.9, 0.9, 1
+                        font_style: "Body1"
+                        halign: "center"
+                        size_hint_y: None
+                        height: self.texture_size[1]
+                        line_height: 1.4
+
+                # Bottom spacing
+                Widget:
+                    size_hint_y: None
+                    height: dp(20)

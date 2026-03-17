@@ -1,0 +1,24 @@
+# Main UI Frameworks
+kivy==2.3.0
+kivymd==1.2.0
+
+# Android Integration & Performance
+# pyjnius is the modern Cython-based version of jnius
+pyjnius==1.6.0
+
+# Android Specific APIs
+# For requesting runtime permissions (e.g., storage, camera)
+android-permissions==1.1
+
+
+# Gemini AI and LangChain Integration
+google-generativeai==0.5.4
+langchain==0.2.1
+langchain-google-genai==1.0.3
+python-dotenv==1.0.1
+
+# Deepfake Detection
+requests==2.31.0
+Pillow==10.0.1
+python-dotenv==1.0.0
+
